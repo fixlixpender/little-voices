@@ -30,7 +30,7 @@ export default function Home() {
         <h1 className="text-2xl font-bold text-[#f5ac44] italic">Little Voices</h1>
         <button 
           onClick={() => supabase.auth.signOut().then(() => router.push('/login'))}
-          className="text-xs font-bold text-[#f5ac44] uppercase tracking-widest"
+          className="text-xs font-bold text-[#ffffff] uppercase tracking-widest"
         >
           Logout
         </button>
