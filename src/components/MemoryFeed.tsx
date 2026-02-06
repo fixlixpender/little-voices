@@ -135,7 +135,7 @@ export default function MemoryFeed() {
         {!searchQuery && memories.length > 3 && (
           <button 
             onClick={() => setShowAll(!showAll)}
-            className="text-[10px] font-black text-[#A3B18A] hover:text-[#2C5F5D] transition-colors uppercase tracking-widest bg-white/40 px-4 py-2 rounded-full shadow-sm"
+            className="text-[10px] font-black text-slate-500 hover:text-[#2C5F5D] transition-colors uppercase tracking-widest bg-white/40 px-4 py-2 rounded-full shadow-sm"
           >
             {showAll ? 'Show Less' : `View All (${memories.length})`}
           </button>
