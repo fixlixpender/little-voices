@@ -176,7 +176,7 @@ export default function AddWordForm() {
         <button 
           type="submit" 
           disabled={loading || !selectedChildId}
-          className="w-full bg-[#2C5F5D] text-white p-4 rounded-2xl font-bold hover:bg-[#1f4543] transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed mt-2"
+          className="w-full bg-[#f5ac44] text-white p-4 rounded-2xl font-bold hover:bg-[#f5ac44] transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed mt-2"
         >
           {loading ? 'Saving to the cloud...' : 'Save Memory'}
         </button>
