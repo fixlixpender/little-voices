@@ -1,9 +1,14 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { supabase } from '@/lib/supabase';
 
-export default function AddChildForm() {
+// We define that this component now expects a function called onChildAdded
+interface AddChildFormProps {
+  onChildAdded?: () => void;
+}
+
+export default function AddChildForm({ onChildAdded }: AddChildFormProps) {
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -13,7 +18,6 @@ export default function AddChildForm() {
 
     setLoading(true);
 
-    // 1. Get the current user
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
@@ -22,19 +26,21 @@ export default function AddChildForm() {
       return;
     }
 
-    // 2. Insert the child with YOUR user_id
     const { error } = await supabase
       .from('children')
       .insert([{ 
         name, 
-        user_id: user.id // Links the child to Filipe
+        user_id: user.id 
       }]);
 
     if (error) {
       alert(error.message);
     } else {
       setName('');
-      alert(`${name} added to your family!`);
+      // This is the magic line: it tells the Parent (page.tsx) to refresh
+      if (onChildAdded) {
+        onChildAdded();
+      }
     }
     setLoading(false);
   };
