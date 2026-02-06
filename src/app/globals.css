@@ -20,7 +20,7 @@
 }
 
 body {
-  background-color: #FDFBF7; /* A soft, warm off-white/sand */
-  color: #1A2F2E;            /* A very deep green instead of pure black */
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #cdb4f0; /* The new purple! */
+  color: #1A2F2E;            
+  min-height: 100vh;
 }
