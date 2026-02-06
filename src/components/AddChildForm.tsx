@@ -56,7 +56,7 @@ export default function AddChildForm() {
         <button
           type="submit"
           disabled={loading}
-          className="bg-[#A3B18A] hover:bg-[#2C5F5D] text-white font-bold py-4 px-8 rounded-full transition-all active:scale-95 disabled:opacity-50 whitespace-nowrap shadow-md"
+          className="bg-[#f5ac44] hover:bg-[#2C5F5D] text-white font-bold py-4 px-8 rounded-full transition-all active:scale-95 disabled:opacity-50 whitespace-nowrap shadow-md"
         >
           {loading ? '...' : 'Add Child'}
         </button>
