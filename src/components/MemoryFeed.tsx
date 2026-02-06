@@ -101,7 +101,7 @@ export default function MemoryFeed() {
 
   if (loading) return (
     <div className="flex justify-center p-10">
-      <p className="text-[#2C5F5D] animate-pulse font-bold tracking-widest uppercase text-xs">Loading memories...</p>
+      <p className="text-slate-500 animate-pulse font-bold tracking-widest uppercase text-xs">Loading memories...</p>
     </div>
   );
 
@@ -120,7 +120,7 @@ export default function MemoryFeed() {
           <svg className="absolute left-5 top-5 text-gray-400 group-focus-within:text-[#cdb4f0] transition-colors" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
         </div>
         {searchQuery === '' && memories.length > 3 && (
-          <p className="text-[10px] text-[#2C5F5D]/60 mt-3 italic px-4 font-medium">
+          <p className="text-[10px] text-slate-500/60 mt-3 italic px-4 font-medium">
             Showing last 3 memories. Use search to find more!
           </p>
         )}
@@ -146,7 +146,7 @@ export default function MemoryFeed() {
       <div className="space-y-6">
         {memories.length === 0 ? (
           <div className="bg-white/30 p-12 rounded-[2.5rem] border-2 border-dashed border-white/50 text-center">
-            <p className="text-[#2C5F5D] font-medium italic opacity-60">No memories saved yet. Time to catch a funny word!</p>
+            <p className="text-slate-500 font-medium italic opacity-60">No memories saved yet. Time to catch a funny word!</p>
           </div>
         ) : (
           filteredMemories.map((memory) => (
@@ -177,7 +177,7 @@ export default function MemoryFeed() {
                       {memory.original_word}
                     </span>
                     <span className="text-gray-300 font-serif italic text-xl">is</span>
-                    <span className="text-3xl font-semibold text-[#2C5F5D] italic tracking-tight">
+                    <span className="text-3xl font-semibold text-slate-500 italic tracking-tight">
                       {memory.translated_word}
                     </span>
                   </div>
