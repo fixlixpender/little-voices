@@ -108,7 +108,7 @@ export default function AddWordForm() {
               onClick={() => setSelectedChildId(child.id)}
               className={`px-6 py-2 rounded-full font-bold transition-all transform active:scale-95 ${
                 selectedChildId === child.id 
-                  ? 'bg-[#A3B18A] text-white shadow-md' 
+                  ? 'bg-[#f5ac44] text-white shadow-md' 
                   : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
               }`}
             >
