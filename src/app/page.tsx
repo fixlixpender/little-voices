@@ -27,10 +27,10 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-transparent py-10 px-6 flex flex-col items-center">
       <div className="w-full max-w-2xl flex justify-between items-center mb-8">
-        <h1 className="text-2xl font-bold text-slate-800 italic">Little Voices</h1>
-        <button 
+        <h1 className="text-2xl font-bold text-slate-800 italic tracking-tight">Little Voices</h1>
+        <button
           onClick={() => supabase.auth.signOut().then(() => router.push('/login'))}
-          className="text-xs font-bold text-[#ffffff] uppercase tracking-widest"
+          className="text-[10px] font-black text-slate-400 hover:text-red-500 hover:bg-red-50 px-4 py-2 rounded-full border border-slate-200 hover:border-red-200 transition-all uppercase tracking-[0.2em] bg-white/50 shadow-sm active:scale-95"
         >
           Logout
         </button>
