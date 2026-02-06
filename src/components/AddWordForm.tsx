@@ -94,7 +94,7 @@ export default function AddWordForm() {
 
   return (
     <div className="w-full max-w-2xl bg-white p-6 rounded-3xl shadow-sm border border-white/50 mb-6">
-      <h3 className="text-[#2C5F5D] font-bold mb-4 px-1 text-sm uppercase tracking-wider">Who said it?</h3>
+      <h3 className="text-slate-500 font-bold mb-4 px-1 text-sm uppercase tracking-wider">Who said it?</h3>
       
       {/* Child Selection Pills */}
       <div className="flex flex-wrap gap-3 mb-8">
@@ -140,7 +140,7 @@ export default function AddWordForm() {
         </div>
 
           <div className="space-y-4 mb-4">
-            <label className="block text-sm font-bold text-[#2C5F5D] px-1 uppercase tracking-wider">
+            <label className="block text-sm font-bold text-slate-500 px-1 uppercase tracking-wider">
               Capture the moment
             </label>
             <div className="flex items-center gap-4">
