@@ -2,7 +2,7 @@
   "name": "Little Voices",
   "short_name": "LittleVoices",
   "description": "Capture the funny things your kids say.",
-  "start_url": "/",
+  "start_url": "/?v=2",
   "display": "standalone",
   "background_color": "#cdb4f0",
   "theme_color": "#cdb4f0",

@@ -25,7 +25,7 @@ export default function Home() {
   if (!session) return null; // Prevent flicker while checking session
 
   return (
-    <main className="min-h-screen bg-[#F5E6CA] py-10 px-6 flex flex-col items-center">
+    <main className="min-h-screen bg-transparent py-10 px-6 flex flex-col items-center">
       <div className="w-full max-w-2xl flex justify-between items-center mb-8">
         <h1 className="text-2xl font-bold text-[#2C5F5D] italic">Little Voices</h1>
         <button 
