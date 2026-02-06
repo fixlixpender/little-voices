@@ -45,7 +45,10 @@ export default function Home() {
       <AddChildForm onChildAdded={handleChildAdded} />
       
       {/* Adding the key here forces the component to reload when refreshKey changes */}
-      <AddWordForm key={`word-form-${refreshKey}`} />
+      <AddWordForm 
+        key={`word-form-${refreshKey}`} 
+        onMemoryAdded={handleChildAdded} 
+      />
       
       <MemoryFeed key={`feed-${refreshKey}`} />
     </main>
