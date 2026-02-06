@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
+  --background: #cdb4f0; /* Your purple */
   --foreground: #171717;
 }
 
@@ -20,7 +20,8 @@
 }
 
 body {
-  background-color: #cdb4f0; /* The new purple! */
-  color: #1A2F2E;            
+  background-color: var(--background) !important;
+  color: var(--foreground);
   min-height: 100vh;
+  margin: 0;
 }
