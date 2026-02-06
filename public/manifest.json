@@ -4,8 +4,8 @@
   "description": "Capture the funny things your kids say.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#F2E8CF",
-  "theme_color": "#2C5F5D",
+  "background_color": "#cdb4f0",
+  "theme_color": "#cdb4f0",
   "icons": [
     {
       "src": "/icon-192.png",
