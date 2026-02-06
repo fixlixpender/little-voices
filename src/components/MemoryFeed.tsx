@@ -145,7 +145,7 @@ export default function MemoryFeed() {
         </div>
       ) : (
         filteredMemories.map((memory) => (
-          <div key={memory.id} className="group bg-white/80 backdrop-blur-md p-5 rounded-3xl shadow-sm border border-white flex justify-between items-center transition-all hover:shadow-md">
+          <div key={memory.id} className="group bg-white p-6 rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border-none transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] flex justify-between items-center transition-all hover:shadow-md">
             
             <div className="flex items-center gap-5">
               {memory.image_url && (
