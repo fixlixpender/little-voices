@@ -40,23 +40,27 @@ export default function AddChildForm() {
   };
 
   return (
-    <div className="w-full max-w-2xl bg-white/40 backdrop-blur-sm p-6 rounded-3xl border border-white mb-6">
-      <form onSubmit={handleAddChild} className="flex gap-4">
+    <form 
+      onSubmit={handleAddChild} 
+      className="w-full max-w-2xl bg-white/20 backdrop-blur-md p-4 rounded-[2.5rem] border border-white/30 shadow-sm mb-8"
+    >
+      <div className="flex flex-col sm:flex-row gap-3">
         <input
           type="text"
           placeholder="Add a child (e.g. Phoebe)"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="flex-1 p-3 rounded-2xl border-none outline-none focus:ring-2 focus:ring-[#A3B18A] text-slate-900"
+          className="flex-1 p-4 px-6 rounded-full bg-white/40 border-none focus:bg-white outline-none transition-all text-slate-900 placeholder:text-gray-500"
+          required
         />
         <button
           type="submit"
           disabled={loading}
-          className="bg-[#A3B18A] text-white px-6 py-3 rounded-2xl font-bold hover:bg-[#2C5F5D] transition-colors disabled:opacity-50"
+          className="bg-[#A3B18A] hover:bg-[#2C5F5D] text-white font-bold py-4 px-8 rounded-full transition-all active:scale-95 disabled:opacity-50 whitespace-nowrap shadow-md"
         >
-          {loading ? 'Adding...' : 'Add Child'}
+          {loading ? '...' : 'Add Child'}
         </button>
-      </form>
-    </div>
+      </div>
+    </form>
   );
 }
