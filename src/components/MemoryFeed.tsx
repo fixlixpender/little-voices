@@ -128,7 +128,7 @@ export default function MemoryFeed() {
 
       {/* DYNAMIC HEADER SECTION */}
       <div className="flex justify-between items-end px-4 mb-2">
-        <h2 className="text-sm font-black text-[#2C5F5D] uppercase tracking-[0.2em]">
+        <h2 className="text-sm font-black text-slate-500 uppercase tracking-[0.2em]">
           {searchQuery ? 'Search Results' : showAll ? 'All Memories' : 'Recent Memories'}
         </h2>
         
@@ -169,15 +169,15 @@ export default function MemoryFeed() {
 
                 {/* TEXT CONTENT */}
                 <div className="flex flex-col gap-1">
-                  <span className="text-[11px] font-black text-[#A3B18A] uppercase tracking-[0.15em]">
+                  <span className="text-[11px] font-black text-[#f5ac44] uppercase tracking-[0.15em]">
                     {memory.children?.name || 'Unknown'} said:
                   </span>
                   <div className="flex items-baseline gap-2 flex-wrap">
                     <span className="text-3xl font-bold text-slate-900 tracking-tight">
                       {memory.original_word}
                     </span>
-                    <span className="text-gray-300 font-serif italic text-xl">is</span>
-                    <span className="text-3xl font-semibold text-slate-500 italic tracking-tight">
+                    <span className="text-gray-600 font-serif italic text-xl">is</span>
+                    <span className="text-3xl font-semibold text-[#f5ac44] italic tracking-tight">
                       {memory.translated_word}
                     </span>
                   </div>
