@@ -73,25 +73,34 @@ export default function MemoryFeed() {
   };
 
   const handleDelete = async (id: string) => {
-    // 1. You must get the user first so the code knows who 'user' is
-    const { data: { user } } = await supabase.auth.getUser();
+    // 1. Confirm with the user first (Good UX)
+    if (!window.confirm("Are you sure you want to delete this memory?")) return;
 
-    if (!user) {
-      alert("You must be logged in to delete.");
-      return;
-    }
+    try {
+      // 2. Get the current user specifically for this action
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
 
-    // 2. Now 'user.id' exists and will work!
-    const { error } = await supabase
-      .from('dictionary_entries')
-      .delete()
-      .eq('id', id)          // Delete the specific memory
-      .eq('user_id', user.id); // Double-check it belongs to you
+      if (userError || !user) {
+        alert("Session expired. Please log in again.");
+        return;
+      }
 
-    if (error) {
-      alert("Error deleting: " + error.message);
-    } else {
-      // refresh the feed...
+      // 3. Perform the delete with BOTH IDs for security
+      const { error } = await supabase
+        .from('dictionary_entries')
+        .delete()
+        .eq('id', id)          // The specific word ID
+        .eq('user_id', user.id); // Ensures Filipe can only delete Filipe's words
+
+      if (error) {
+        console.error("Delete error:", error);
+        alert("Could not delete: " + error.message);
+      } else {
+        // 4. Update the UI immediately so the word disappears
+        setMemories((prev) => prev.filter((m) => m.id !== id));
+      }
+    } catch (err) {
+      console.error("Unexpected error:", err);
     }
   };
 
@@ -200,12 +209,23 @@ export default function MemoryFeed() {
               {/* DELETE BUTTON */}
               <button 
                 onClick={() => handleDelete(memory.id)}
-                className="ml-4 p-3 text-slate-500 hover:text-red-600 hover:bg-red-50 active:scale-90 transition-all rounded-full"
+                className="p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all active:scale-90"
+                title="Delete memory"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M3 6h18"></path>
-                  <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-                  <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  width="18" 
+                  height="18" 
+                  viewBox="0 0 24 24" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  strokeWidth="2" 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round"
+                >
+                  <path d="M3 6h18" />
+                  <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                  <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
                 </svg>
               </button>
             </div>
