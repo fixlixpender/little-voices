@@ -18,8 +18,18 @@ export default function AddWordForm({ onMemoryAdded }: AddWordFormProps) {
   // Fetch children for the selection buttons
   useEffect(() => {
     const fetchChildren = async () => {
-      const { data } = await supabase.from('children').select('*');
-      if (data) setChildren(data);
+      // 1. Get the current logged-in user's ID
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (user) {
+        // 2. Only select children where the user_id matches yours
+        const { data, error } = await supabase
+          .from('children')
+          .select('*')
+          .eq('user_id', user.id); 
+
+        if (data) setChildren(data);
+      }
     };
     fetchChildren();
   }, []);

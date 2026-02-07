@@ -79,7 +79,7 @@ export default function MemoryFeed() {
     const { error } = await supabase
       .from('dictionary_entries')
       .delete()
-      .eq('id', id);
+      .eq('user_id', user.id)
 
     if (error) {
       alert("Error deleting: " + error.message);
