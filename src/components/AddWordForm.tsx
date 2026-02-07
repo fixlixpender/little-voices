@@ -42,7 +42,7 @@ export default function AddWordForm({ onMemoryAdded }: AddWordFormProps) {
 
       recorder.ondataavailable = (e) => chunks.push(e.data);
       recorder.onstop = () => {
-        // Try 'audio/mp4' if 'audio/webm' continues to be silent on iPhone
+        // Changing webm to mp4 for better mobile compatibility
         const blob = new Blob(chunks, { type: 'audio/mp4' }); 
         setAudioBlob(blob);
       };
@@ -91,24 +91,24 @@ export default function AddWordForm({ onMemoryAdded }: AddWordFormProps) {
 
       // --- AUDIO UPLOAD LOGIC ---
       if (audioBlob) {
-        // Use a unique name for every recording
-        const fileName = `${user!.id}/${Date.now()}.webm`;
+        // 1. We change the extension to .mp4 so phones can play it easily
+        const fileName = `${user!.id}/${Date.now()}.mp4`; 
         
         const { error: audioUploadError } = await supabase.storage
-          .from('voices') // Make sure this matches your bucket name exactly!
+          .from('voices')
           .upload(fileName, audioBlob);
 
         if (audioUploadError) {
           console.error("Audio upload error:", audioUploadError);
           alert("Audio upload failed: " + audioUploadError.message);
         } else {
-          // Get the actual URL to save in the database
+          // 2. Get the URL to save in the dictionary_entries table
           const { data: audioPublicUrlData } = supabase.storage
             .from('voices')
             .getPublicUrl(fileName);
             
           audioUrl = audioPublicUrlData.publicUrl;
-          console.log("Audio URL generated:", audioUrl); // Check your console for this!
+          console.log("Audio URL generated:", audioUrl);
         }
       }
 

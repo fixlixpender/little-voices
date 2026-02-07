@@ -96,11 +96,10 @@ export default function MemoryFeed({ refreshKey }: { refreshKey?: number }) {
                   <button
                     onClick={(e) => {
                       e.preventDefault();
-                      const audio = new Audio();
-                      audio.src = memory.audio_url;
-                      audio.type = 'audio/webm'; // Help the phone identify the file
+                      // We pass the URL directly into the constructor
+                      const audio = new Audio(memory.audio_url);
                       
-                      // Mobile browsers require the play() to be inside a direct click event
+                      // We tell the browser it's audio, but let it handle the MIME type automatically
                       audio.play().catch(err => {
                         console.error("Playback failed:", err);
                         alert("Please ensure your phone is not on silent mode.");
