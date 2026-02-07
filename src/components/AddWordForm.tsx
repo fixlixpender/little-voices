@@ -42,7 +42,8 @@ export default function AddWordForm({ onMemoryAdded }: AddWordFormProps) {
 
       recorder.ondataavailable = (e) => chunks.push(e.data);
       recorder.onstop = () => {
-        const blob = new Blob(chunks, { type: 'audio/webm' });
+        // Try 'audio/mp4' if 'audio/webm' continues to be silent on iPhone
+        const blob = new Blob(chunks, { type: 'audio/mp4' }); 
         setAudioBlob(blob);
       };
 

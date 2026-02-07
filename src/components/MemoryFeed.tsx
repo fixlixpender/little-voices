@@ -94,13 +94,21 @@ export default function MemoryFeed({ refreshKey }: { refreshKey?: number }) {
                 </span>
                 {memory.audio_url && (
                   <button
-                    onClick={() => {
-                      const audio = new Audio(memory.audio_url);
-                      audio.play();
+                    onClick={(e) => {
+                      e.preventDefault();
+                      const audio = new Audio();
+                      audio.src = memory.audio_url;
+                      audio.type = 'audio/webm'; // Help the phone identify the file
+                      
+                      // Mobile browsers require the play() to be inside a direct click event
+                      audio.play().catch(err => {
+                        console.error("Playback failed:", err);
+                        alert("Please ensure your phone is not on silent mode.");
+                      });
                     }}
-                    className="ml-4 p-3 bg-[#2C5F5D] text-white rounded-full hover:bg-teal-700 transition-all active:scale-90"
+                    className="ml-4 p-3 bg-[#2C5F5D] text-white rounded-full active:scale-95 shadow-lg"
                   >
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                       <polygon points="5 3 19 12 5 21 5 3"></polygon>
                     </svg>
                   </button>
