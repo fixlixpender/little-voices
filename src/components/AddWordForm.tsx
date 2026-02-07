@@ -91,7 +91,7 @@ export default function AddWordForm({ onMemoryAdded }: AddWordFormProps) {
       // --- AUDIO UPLOAD LOGIC ---
       if (audioBlob) {
         // Use a unique name for every recording
-        const fileName = `${user.id}/${Date.now()}.webm`; // Adding the user ID as a folder is a pro-move
+        const fileName = `${user!.id}/${Date.now()}.webm`;
         
         const { error: audioUploadError } = await supabase.storage
           .from('voices') // Make sure this matches your bucket name exactly!
