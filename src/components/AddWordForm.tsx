@@ -88,16 +88,26 @@ export default function AddWordForm({ onMemoryAdded }: AddWordFormProps) {
         }
       }
 
-      // Audio Upload
+      // --- AUDIO UPLOAD LOGIC ---
       if (audioBlob) {
-        const fileName = `${Math.random()}.webm`;
-        const { error: audioError } = await supabase.storage
-          .from('voices')
+        // Use a unique name for every recording
+        const fileName = `voice-${Date.now()}-${Math.random().toString(36).substring(7)}.webm`;
+        
+        const { error: audioUploadError } = await supabase.storage
+          .from('voices') // Make sure this matches your bucket name exactly!
           .upload(fileName, audioBlob);
 
-        if (!audioError) {
-          const { data } = supabase.storage.from('voices').getPublicUrl(fileName);
-          audioUrl = data.publicUrl;
+        if (audioUploadError) {
+          console.error("Audio upload error:", audioUploadError);
+          alert("Audio upload failed: " + audioUploadError.message);
+        } else {
+          // Get the actual URL to save in the database
+          const { data: audioPublicUrlData } = supabase.storage
+            .from('voices')
+            .getPublicUrl(fileName);
+            
+          audioUrl = audioPublicUrlData.publicUrl;
+          console.log("Audio URL generated:", audioUrl); // Check your console for this!
         }
       }
 

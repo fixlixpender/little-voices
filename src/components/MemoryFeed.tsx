@@ -92,6 +92,19 @@ export default function MemoryFeed({ refreshKey }: { refreshKey?: number }) {
                 <span className="text-[10px] font-bold text-[#f5ac44] uppercase tracking-wider block mb-1">
                   {memory.children?.name} said:
                 </span>
+                {memory.audio_url && (
+                  <button
+                    onClick={() => {
+                      const audio = new Audio(memory.audio_url);
+                      audio.play();
+                    }}
+                    className="ml-4 p-3 bg-[#2C5F5D] text-white rounded-full hover:bg-teal-700 transition-all active:scale-90"
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                      <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                  </button>
+                )}
                 <p className="text-xl font-bold text-slate-800 leading-tight">
                   {memory.original_word} <span className="text-slate-400 font-medium italic text-lg">is</span> <span className="text-[#f5ac44] italic">{memory.translated_word}</span>
                 </p>
