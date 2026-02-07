@@ -173,12 +173,15 @@ export default function MemoryFeed() {
               <div className="flex items-center gap-6">
                 {/* IMAGE SECTION */}
                 {memory.image_url && (
-                  <div className="relative h-24 w-24 flex-shrink-0">
-                    <img 
-                      src={getImageUrl(memory.image_url)} 
-                      alt="Moment" 
-                      onClick={() => setSelectedImage(getImageUrl(memory.image_url!))}
-                      className="h-full w-full object-cover rounded-3xl shadow-md border-4 border-[#FDFBF7] cursor-pointer hover:rotate-2 transition-transform"
+                  <div className="relative w-20 h-20 flex-shrink-0 mr-4">
+                    <img
+                      src={memory.image_url}
+                      alt="Memory"
+                      className="w-full h-full object-cover rounded-2xl shadow-inner border border-slate-100"
+                      onError={(e) => {
+                        // This is a safety net: if the image fails, we hide the broken icon
+                        (e.target as HTMLImageElement).style.display = 'none';
+                      }}
                     />
                   </div>
                 )}
