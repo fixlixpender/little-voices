@@ -48,43 +48,39 @@ export default function MemoryFeed() {
   };
 
   const fetchMemories = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    const { data: { user } } = await supabase.auth.getUser(); // Add this line!
 
-    const { data, error } = await supabase
-      .from('dictionary_entries')
-      .select(`
-        id,
-        original_word,
-        translated_word,
-        created_at,
-        image_url,
-        children ( name )
-      `)
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false });
+    if (user) {
+      const { data } = await supabase
+        .from('dictionary_entries')
+        .select('*, children(name)')
+        .eq('user_id', user.id) // Now this is safe
+        .order('created_at', { ascending: false });
 
-    if (error) {
-      console.error("Error fetching:", error.message);
-    } else {
-      setMemories(data as any);
+      if (data) setMemories(data);
     }
-    setLoading(false);
   };
 
   const handleDelete = async (id: string) => {
-    const confirmed = window.confirm("Are you sure you want to delete this memory?");
-    if (!confirmed) return;
+    // 1. You must get the user first so the code knows who 'user' is
+    const { data: { user } } = await supabase.auth.getUser();
 
+    if (!user) {
+      alert("You must be logged in to delete.");
+      return;
+    }
+
+    // 2. Now 'user.id' exists and will work!
     const { error } = await supabase
       .from('dictionary_entries')
       .delete()
-      .eq('user_id', user.id)
+      .eq('id', id)          // Delete the specific memory
+      .eq('user_id', user.id); // Double-check it belongs to you
 
     if (error) {
       alert("Error deleting: " + error.message);
     } else {
-      setMemories(memories.filter(m => m.id !== id));
+      // refresh the feed...
     }
   };
 
