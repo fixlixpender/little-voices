@@ -15,6 +15,35 @@ export default function AddWordForm({ onMemoryAdded }: AddWordFormProps) {
   const [imageFile, setImageFile] = useState<File | null>(null); // Re-added Image State
   const [loading, setLoading] = useState(false);
 
+  const [isRecording, setIsRecording] = useState(false);
+  const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
+  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
+
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recorder = new MediaRecorder(stream);
+      const chunks: BlobPart[] = [];
+
+      recorder.ondataavailable = (e) => chunks.push(e.data);
+      recorder.onstop = () => {
+        const blob = new Blob(chunks, { type: 'audio/webm' });
+        setAudioBlob(blob);
+      };
+
+      recorder.start();
+      setMediaRecorder(recorder);
+      setIsRecording(true);
+    } catch (err) {
+      alert("Microphone access denied or not available.");
+    }
+  };
+
+  const stopRecording = () => {
+    mediaRecorder?.stop();
+    setIsRecording(false);
+  };
+
   useEffect(() => {
     const fetchChildren = async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -41,6 +70,7 @@ export default function AddWordForm({ onMemoryAdded }: AddWordFormProps) {
     const user = userData?.user;
 
     let imageUrl = null;
+    let audioUrl = null; // Step 1: Initialize the audio variable
 
     // --- PHOTO UPLOAD LOGIC ---
     if (imageFile) {
@@ -59,6 +89,50 @@ export default function AddWordForm({ onMemoryAdded }: AddWordFormProps) {
         imageUrl = publicUrlData.publicUrl;
       }
     }
+
+    // --- AUDIO UPLOAD LOGIC (New) ---
+    if (audioBlob) {
+      const fileName = `${Math.random()}.webm`;
+      const { error: audioUploadError } = await supabase.storage
+        .from('voices') // Make sure this bucket exists in Supabase!
+        .upload(fileName, audioBlob);
+
+      if (audioUploadError) {
+        alert("Audio upload failed: " + audioUploadError.message);
+      } else {
+        const { data: audioPublicUrlData } = supabase.storage
+          .from('voices')
+          .getPublicUrl(fileName);
+        audioUrl = audioPublicUrlData.publicUrl;
+      }
+    }
+
+    // --- FINAL DATABASE INSERT ---
+    const { error } = await supabase
+      .from('dictionary_entries')
+      .insert([{
+        child_id: selectedChildId,
+        original_word: originalWord,
+        translated_word: translatedWord,
+        image_url: imageUrl,
+        audio_url: audioUrl, // Step 2: Add the audio link to the database row
+        user_id: user?.id
+      }]);
+
+    if (error) {
+      alert("Error saving memory: " + error.message);
+    } else {
+      // Step 3: Reset everything on success
+      setOriginalWord('');
+      setTranslatedWord('');
+      setImageFile(null);
+      setAudioBlob(null); // Clear the voice note
+      if (onMemoryAdded) onMemoryAdded();
+      alert("Memory saved successfully!");
+    }
+
+    setLoading(false);
+  };
 
     const { error } = await supabase
       .from('dictionary_entries')
@@ -133,6 +207,54 @@ export default function AddWordForm({ onMemoryAdded }: AddWordFormProps) {
             <input type="file" accept="image/*" className="hidden" onChange={(e) => setImageFile(e.target.files?.[0] || null)} />
           </label>
         </div>
+
+        {/* RECORD VOICE SECTION */}
+          <div className="space-y-4">
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-widest block mb-2">
+              Add a voice note
+            </span>
+            
+            <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100 transition-all">
+              <button
+                type="button"
+                onClick={isRecording ? stopRecording : startRecording}
+                className={`relative flex items-center justify-center w-14 h-14 rounded-full transition-all active:scale-90 shadow-md ${
+                  isRecording 
+                    ? 'bg-red-500 text-white shadow-red-200' 
+                    : audioBlob 
+                      ? 'bg-[#2C5F5D] text-white' 
+                      : 'bg-white text-slate-400 hover:text-slate-600'
+                }`}
+              >
+                {isRecording && (
+                  <span className="absolute inset-0 rounded-full bg-red-500 animate-ping opacity-25"></span>
+                )}
+                
+                {isRecording ? (
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
+                ) : audioBlob ? (
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                ) : (
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+                )}
+              </button>
+
+              <div className="flex flex-col">
+                <span className={`text-sm font-bold uppercase tracking-tight ${isRecording ? 'text-red-500' : 'text-slate-700'}`}>
+                  {isRecording ? 'Recording...' : audioBlob ? 'Voice Captured!' : 'Tap to record'}
+                </span>
+                {audioBlob && !isRecording && (
+                  <button 
+                    type="button"
+                    onClick={() => setAudioBlob(null)}
+                    className="text-[10px] text-slate-400 hover:text-red-500 uppercase font-bold tracking-widest text-left mt-1"
+                  >
+                    Discard & Re-record
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
 
         <button
           type="submit"
