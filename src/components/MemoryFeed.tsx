@@ -173,15 +173,11 @@ export default function MemoryFeed() {
               <div className="flex items-center gap-6">
                 {/* IMAGE SECTION */}
                 {memory.image_url && (
-                  <div className="relative w-20 h-20 flex-shrink-0 mr-4">
+                  <div className="relative w-20 h-20 flex-shrink-0 mr-4 cursor-pointer" onClick={() => setSelectedImg(memory.image_url)}>
                     <img
                       src={memory.image_url}
                       alt="Memory"
-                      className="w-full h-full object-cover rounded-2xl shadow-inner border border-slate-100"
-                      onError={(e) => {
-                        // This is a safety net: if the image fails, we hide the broken icon
-                        (e.target as HTMLImageElement).style.display = 'none';
-                      }}
+                      className="w-full h-full object-cover rounded-2xl shadow-sm hover:scale-105 transition-transform"
                     />
                   </div>
                 )}
@@ -237,27 +233,17 @@ export default function MemoryFeed() {
       </div>
 
       {/* LIGHTBOX MODAL */}
-      {selectedImage && (
+      {selectedImg && (
         <div 
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-md p-4 cursor-pointer"
-          onClick={() => setSelectedImage(null)}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm p-4"
+          onClick={() => setSelectedImg(null)}
         >
-          <div className="relative max-w-4xl w-full h-full flex items-center justify-center">
-            <img 
-              src={selectedImage} 
-              alt="Enlarged moment" 
-              className="max-h-[85vh] max-w-full object-contain rounded-2xl shadow-2xl border-4 border-white/10"
-            />
-            <button 
-              className="absolute top-4 right-4 text-white bg-white/10 hover:bg-white/20 p-4 rounded-full transition-all"
-              onClick={() => setSelectedImage(null)}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-              </svg>
-            </button>
-          </div>
+          <button className="absolute top-10 right-10 text-white text-4xl">&times;</button>
+          <img 
+            src={selectedImg} 
+            className="max-w-full max-h-[80vh] rounded-lg shadow-2xl" 
+            alt="Zoomed memory"
+          />
         </div>
       )}
     </div>
