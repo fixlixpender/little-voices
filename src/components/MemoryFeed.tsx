@@ -48,17 +48,28 @@ export default function MemoryFeed() {
   };
 
   const fetchMemories = async () => {
-    const { data: { user } } = await supabase.auth.getUser(); // Add this line!
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
 
-    if (user) {
-      const { data } = await supabase
-        .from('dictionary_entries')
-        .select('*, children(name)')
-        .eq('user_id', user.id) // Now this is safe
-        .order('created_at', { ascending: false });
+    const { data, error } = await supabase
+      .from('dictionary_entries')
+      .select(`
+        id,
+        original_word,
+        translated_word,
+        created_at,
+        image_url,
+        children ( name )
+      `)
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false });
 
-      if (data) setMemories(data);
+    if (error) {
+      console.error("Error fetching:", error.message);
+    } else {
+      setMemories(data as any);
     }
+    setLoading(false);
   };
 
   const handleDelete = async (id: string) => {
