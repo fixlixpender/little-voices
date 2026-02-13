@@ -105,7 +105,7 @@ export default function MemoryFeed({ refreshKey }: { refreshKey?: number }) {
                         alert("Please ensure your phone is not on silent mode.");
                       });
                     }}
-                    className="ml-4 p-3 bg-[#2C5F5D] text-white rounded-full active:scale-95 shadow-lg"
+                    className="ml-4 p-3 bg-[#f5ac44] text-white rounded-full active:scale-95 shadow-lg"
                   >
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                       <polygon points="5 3 19 12 5 21 5 3"></polygon>
@@ -116,7 +116,7 @@ export default function MemoryFeed({ refreshKey }: { refreshKey?: number }) {
                   {memory.original_word} <span className="text-slate-400 font-medium italic text-lg">is</span> <span className="text-[#f5ac44] italic">{memory.translated_word}</span>
                 </p>
                 <div className="flex items-center mt-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-purple-400 mr-2"></div>
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#f5ac44] mr-2"></div>
                   <span className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">
                     {new Date(memory.created_at).toLocaleDateString()}
                   </span>

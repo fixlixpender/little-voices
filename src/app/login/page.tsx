@@ -53,9 +53,9 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#F5E6CA] flex items-center justify-center p-6 text-slate-900">
+    <main className="min-h-screen bg-[#dddddd] flex items-center justify-center p-6 text-slate-900">
       <div className="bg-white p-8 rounded-3xl shadow-lg w-full max-w-md border border-white">
-        <h1 className="text-3xl font-bold text-[#2C5F5D] mb-8 text-center italic">Little Voices</h1>
+        <h1 className="text-3xl font-bold text-[#f5ac44] mb-8 text-center italic">Little Voices</h1>
         
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
@@ -85,7 +85,7 @@ export default function LoginPage() {
           <button 
             type="submit" 
             disabled={loading}
-            className="w-full bg-[#2C5F5D] text-white p-4 rounded-2xl font-bold hover:bg-[#1f4543] transition-all shadow-md mt-4 disabled:opacity-50"
+            className="w-full bg-[#f5ac44] text-white p-4 rounded-2xl font-bold hover:bg-[#2b2b2b] transition-all shadow-md mt-4 disabled:opacity-50"
           >
             {loading ? 'Working on it...' : 'Login'}
           </button>
@@ -96,7 +96,7 @@ export default function LoginPage() {
           <button 
             onClick={handleSignUp}
             disabled={loading}
-            className="text-[#A3B18A] font-bold hover:text-[#2C5F5D] transition-colors"
+            className="text-[#f5ac44] font-bold hover:text-[#2b2b2b] transition-colors"
           >
             Create an Account
           </button>

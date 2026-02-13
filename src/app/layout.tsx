@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 
 // 1. Move themeColor here
 export const viewport = {
-  themeColor: '#dddddd', // Change this from the green to purple
+  themeColor: '#dddddd', 
   width: 'device-width',
   initialScale: 1,
 }

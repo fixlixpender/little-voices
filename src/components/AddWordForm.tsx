@@ -208,7 +208,7 @@ export default function AddWordForm({ onMemoryAdded }: AddWordFormProps) {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-5 rounded-2xl transition-all shadow-xl disabled:opacity-50 active:scale-[0.98]"
+          className="w-full bg-[#f5ac44] hover:bg-[#2b2b2b] text-white font-bold py-5 rounded-2xl transition-all shadow-xl disabled:opacity-50 active:scale-[0.98]"
         >
           {loading ? 'Saving Memory...' : 'Save Memory'}
         </button>
