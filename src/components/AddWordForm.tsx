@@ -1,15 +1,16 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { supabase } from '@/lib/supabase';
 
 interface AddWordFormProps {
-  onMemoryAdded?: () => void;
+  onMemoryAdded: () => void;
+  availableKids: any[];
 }
 
-export default function AddWordForm({ onMemoryAdded }: AddWordFormProps) {
-  const [children, setChildren] = useState<any[]>([]);
-  const [selectedChildId, setSelectedChildId] = useState('');
+export default function AddWordForm({ onMemoryAdded, availableKids }: AddWordFormProps) {
+  // Use selectedKidId to match your JSX logic
+  const [selectedKidId, setSelectedKidId] = useState('');
   const [originalWord, setOriginalWord] = useState('');
   const [translatedWord, setTranslatedWord] = useState('');
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -20,20 +21,6 @@ export default function AddWordForm({ onMemoryAdded }: AddWordFormProps) {
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
 
-  useEffect(() => {
-    const fetchChildren = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { data } = await supabase
-          .from('children')
-          .select('*')
-          .eq('user_id', user.id);
-        if (data) setChildren(data);
-      }
-    };
-    fetchChildren();
-  }, []);
-
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -42,7 +29,6 @@ export default function AddWordForm({ onMemoryAdded }: AddWordFormProps) {
 
       recorder.ondataavailable = (e) => chunks.push(e.data);
       recorder.onstop = () => {
-        // Changing webm to mp4 for better mobile compatibility
         const blob = new Blob(chunks, { type: 'audio/mp4' }); 
         setAudioBlob(blob);
       };
@@ -62,8 +48,9 @@ export default function AddWordForm({ onMemoryAdded }: AddWordFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedChildId || !originalWord || !translatedWord) {
-      alert("Please fill in all fields.");
+    // Validate using the new kid ID state
+    if (!selectedKidId || !originalWord || !translatedWord) {
+      alert("Please select a child and fill in all fields.");
       return;
     }
 
@@ -89,48 +76,42 @@ export default function AddWordForm({ onMemoryAdded }: AddWordFormProps) {
         }
       }
 
-      // --- AUDIO UPLOAD LOGIC ---
+      // Audio Upload
       if (audioBlob) {
-        // 1. We change the extension to .mp4 so phones can play it easily
         const fileName = `${user!.id}/${Date.now()}.mp4`; 
-        
         const { error: audioUploadError } = await supabase.storage
           .from('voices')
           .upload(fileName, audioBlob);
 
-        if (audioUploadError) {
-          console.error("Audio upload error:", audioUploadError);
-          alert("Audio upload failed: " + audioUploadError.message);
-        } else {
-          // 2. Get the URL to save in the dictionary_entries table
+        if (!audioUploadError) {
           const { data: audioPublicUrlData } = supabase.storage
             .from('voices')
             .getPublicUrl(fileName);
-            
           audioUrl = audioPublicUrlData.publicUrl;
-          console.log("Audio URL generated:", audioUrl);
         }
       }
 
-      // Database Insert
-      const { error } = await supabase
-        .from('dictionary_entries')
-        .insert([{
-          child_id: selectedChildId,
-          original_word: originalWord,
-          translated_word: translatedWord,
-          image_url: imageUrl,
-          audio_url: audioUrl,
-          user_id: user?.id
-        }]);
+        // Database Insert
+        const { error } = await supabase
+      .from('dictionary_entries')
+      .insert([{
+        child_id: selectedKidId, // Change 'kid_id' to 'child_id' here
+        original_word: originalWord,
+        translated_word: translatedWord,
+        image_url: imageUrl,
+        audio_url: audioUrl,
+        user_id: user?.id
+      }]);
 
       if (error) throw error;
 
-      // Reset
+      // Reset form state
       setOriginalWord('');
       setTranslatedWord('');
+      setSelectedKidId('');
       setImageFile(null);
       setAudioBlob(null);
+      
       if (onMemoryAdded) onMemoryAdded();
       alert("Memory saved!");
 
@@ -145,19 +126,23 @@ export default function AddWordForm({ onMemoryAdded }: AddWordFormProps) {
     <div className="w-full max-w-2xl bg-white p-8 rounded-[2.5rem] shadow-sm mb-10">
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Child Selection */}
-        <div>
-          <span className="text-xs font-bold text-slate-500 uppercase tracking-widest block mb-4 text-center sm:text-left">Who said it?</span>
-          <div className="flex gap-3 flex-wrap justify-center sm:justify-start">
-            {children.map((child) => (
+        <div className="mb-6">
+          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">
+            Who said it?
+          </p>
+          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+            {availableKids.map((kid) => (
               <button
-                key={child.id}
+                key={kid.id}
                 type="button"
-                onClick={() => setSelectedChildId(child.id)}
-                className={`px-6 py-3 rounded-full text-sm font-bold transition-all ${
-                  selectedChildId === child.id ? "bg-[#f5ac44] text-white shadow-md" : "bg-slate-100 text-slate-500 hover:bg-slate-200"
+                onClick={() => setSelectedKidId(kid.id)}
+                className={`px-6 py-2 rounded-full font-bold transition-all active:scale-95 ${
+                  selectedKidId === kid.id 
+                    ? 'bg-[#F5AC44] text-white shadow-lg shadow-orange-100' 
+                    : 'bg-slate-100 text-slate-400 hover:bg-slate-200'
                 }`}
               >
-                {child.name}
+                {kid.name}
               </button>
             ))}
           </div>
@@ -183,14 +168,12 @@ export default function AddWordForm({ onMemoryAdded }: AddWordFormProps) {
 
         {/* Media Row (Photo & Voice) */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {/* Photo Upload */}
           <label className="flex flex-col items-center justify-center h-32 border-2 border-dashed border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-50 transition-all">
             <svg className="w-6 h-6 mb-2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
             <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">{imageFile ? 'Photo Added' : 'Add Photo'}</span>
             <input type="file" accept="image/*" className="hidden" onChange={(e) => setImageFile(e.target.files?.[0] || null)} />
           </label>
 
-          {/* Voice Record */}
           <button
             type="button"
             onClick={isRecording ? stopRecording : startRecording}

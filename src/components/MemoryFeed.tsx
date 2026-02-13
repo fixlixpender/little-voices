@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabase';
 export default function MemoryFeed({ refreshKey }: { refreshKey?: number }) {
   const [memories, setMemories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedImg, setSelectedImg] = useState<string | null>(null); // Lightbox State
+  const [selectedImg, setSelectedImg] = useState<string | null>(null);
 
   const fetchMemories = async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -16,11 +16,12 @@ export default function MemoryFeed({ refreshKey }: { refreshKey?: number }) {
         .from('dictionary_entries')
         .select(`
           *,
-          children (
-            name
+          kids:child_id (
+            name,
+            color_preference
           )
-        `)
-        .eq('user_id', user.id) // Filter by your user ID
+        `) // Explicitly mapping child_id to the kids table
+        .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
       if (error) {
@@ -34,11 +35,10 @@ export default function MemoryFeed({ refreshKey }: { refreshKey?: number }) {
 
   useEffect(() => {
     fetchMemories();
-  }, [refreshKey]); // Refreshes when a new memory or child is added
+  }, [refreshKey]);
 
   const handleDelete = async (id: string) => {
     if (!window.confirm("Are you sure you want to delete this memory?")) return;
-
     const { data: { user } } = await supabase.auth.getUser();
     
     if (user) {
@@ -46,12 +46,11 @@ export default function MemoryFeed({ refreshKey }: { refreshKey?: number }) {
         .from('dictionary_entries')
         .delete()
         .eq('id', id)
-        .eq('user_id', user.id); // Security: Only delete your own
+        .eq('user_id', user.id);
 
       if (error) {
         alert("Error deleting: " + error.message);
       } else {
-        // Optimistic UI update: Remove from list immediately
         setMemories(memories.filter(m => m.id !== id));
       }
     }
@@ -71,10 +70,15 @@ export default function MemoryFeed({ refreshKey }: { refreshKey?: number }) {
         memories.map((memory) => (
           <div 
             key={memory.id} 
-            className="bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-100 flex items-center justify-between group animate-in fade-in slide-in-from-bottom-4 duration-500"
+            className="bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-100 flex items-center justify-between group animate-in fade-in slide-in-from-bottom-4 duration-500 overflow-hidden relative"
           >
-            <div className="flex items-center flex-1">
-              {/* Image Section with Lightbox Trigger */}
+            {/* Child's Color Accent */}
+            <div 
+              className="absolute left-0 top-0 bottom-0 w-2" 
+              style={{ backgroundColor: memory.kids?.color_preference || '#f5ac44' }}
+            />
+
+            <div className="flex items-center flex-1 ml-2">
               {memory.image_url && (
                 <div 
                   className="relative w-20 h-20 flex-shrink-0 mr-4 cursor-pointer overflow-hidden rounded-2xl border border-slate-100 shadow-inner"
@@ -89,34 +93,38 @@ export default function MemoryFeed({ refreshKey }: { refreshKey?: number }) {
               )}
 
               <div>
-                <span className="text-[10px] font-bold text-[#f5ac44] uppercase tracking-wider block mb-1">
-                  {memory.children?.name} said:
+                <span 
+                  className="text-[10px] font-bold uppercase tracking-wider block mb-1"
+                  style={{ color: memory.kids?.color_preference || '#f5ac44' }}
+                >
+                  {memory.kids?.name || 'Someone'} said:
                 </span>
-                {memory.audio_url && (
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      // We pass the URL directly into the constructor
-                      const audio = new Audio(memory.audio_url);
-                      
-                      // We tell the browser it's audio, but let it handle the MIME type automatically
-                      audio.play().catch(err => {
-                        console.error("Playback failed:", err);
-                        alert("Please ensure your phone is not on silent mode.");
-                      });
-                    }}
-                    className="ml-4 p-3 bg-[#f5ac44] text-white rounded-full active:scale-95 shadow-lg"
-                  >
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                      <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                    </svg>
-                  </button>
-                )}
-                <p className="text-xl font-bold text-slate-800 leading-tight">
-                  {memory.original_word} <span className="text-slate-400 font-medium italic text-lg">is</span> <span className="text-[#f5ac44] italic">{memory.translated_word}</span>
-                </p>
+
+                <div className="flex items-center gap-3">
+                   <p className="text-xl font-bold text-slate-800 leading-tight">
+                    {memory.original_word} <span className="text-slate-400 font-medium italic text-lg">is</span> <span className="text-[#f5ac44] italic">{memory.translated_word}</span>
+                  </p>
+
+                  {memory.audio_url && (
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        const audio = new Audio(memory.audio_url);
+                        audio.play().catch(err => {
+                          console.error("Playback failed:", err);
+                        });
+                      }}
+                      className="p-2 bg-slate-100 text-slate-500 rounded-full active:scale-95 hover:bg-orange-50 hover:text-[#f5ac44] transition-all"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                      </svg>
+                    </button>
+                  )}
+                </div>
+
                 <div className="flex items-center mt-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#f5ac44] mr-2"></div>
+                  <div className="w-1.5 h-1.5 rounded-full mr-2" style={{ backgroundColor: memory.kids?.color_preference || '#f5ac44' }}></div>
                   <span className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">
                     {new Date(memory.created_at).toLocaleDateString()}
                   </span>
@@ -124,7 +132,6 @@ export default function MemoryFeed({ refreshKey }: { refreshKey?: number }) {
               </div>
             </div>
 
-            {/* Premium Trash Button */}
             <button
               onClick={() => handleDelete(memory.id)}
               className="p-3 text-slate-200 hover:text-red-500 hover:bg-red-50 rounded-2xl transition-all active:scale-90"

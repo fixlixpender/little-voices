@@ -8,6 +8,8 @@ import AddWordForm from '@/components/AddWordForm';
 import MemoryFeed from '@/components/MemoryFeed';
 
 export default function Home() {
+  const [kids, setKids] = useState<any[]>([]);
+  const [selectedKidId, setSelectedKidId] = useState<string | null>(null);
   const router = useRouter();
   const [session, setSession] = useState<any>(null);
   // This key is the "trigger" to refresh the child list
@@ -21,6 +23,11 @@ export default function Home() {
         setSession(session);
       }
     });
+    const fetchKids = async () => {
+      const { data } = await supabase.from('kids').select('*').order('name');
+      if (data) setKids(data);
+    };
+    fetchKids();
   }, [router]);
 
   // When a child is added, we bump this number to force a re-render
@@ -47,7 +54,8 @@ export default function Home() {
       {/* Adding the key here forces the component to reload when refreshKey changes */}
       <AddWordForm 
         key={`word-form-${refreshKey}`} 
-        onMemoryAdded={handleChildAdded} 
+        onMemoryAdded={handleChildAdded}
+        availableKids={kids} 
       />
       
       <MemoryFeed key={`feed-${refreshKey}`} />
