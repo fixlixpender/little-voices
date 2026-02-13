@@ -30,16 +30,21 @@ export const metadata = {
   },
 }
 
+import FloatingNavbar from "@/components/FloatingNavbar";
+
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
-      <body className="bg-[#cdb4f0] min-h-screen">
-        {children}
+      <body className="pb-24 antialiased"> {/* Added antialiased for cleaner text */}
+        <main>{children}</main>
+        <FloatingNavbar />
       </body>
     </html>
   );
 }
+
+
